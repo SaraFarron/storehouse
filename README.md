@@ -17,3 +17,9 @@ An application for storing and hosting video content
 - automatically search for intro and if there is one show skip intro button (only on series)
 - audio tracks selector
 - quality selector
+
+### TODO notes
+- add pfps
+- add video covers
+- add video files
+- add multiple videos to series

@@ -1,1 +1,4 @@
 .idea
+*.db
+.env
+venv
