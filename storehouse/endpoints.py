@@ -1,16 +1,38 @@
-from flask_restful import Resource, reqparse
+from flask_restful import Resource, reqparse, fields, marshal_with
+from storehouse.models import User, Video, Watchlist, Franchise
+from storehouse import db
 
 
-class Video(Resource):
-    def get(self, video_id):
-        return 'hello world!', 200
-
-    def put(self, video_id):
-        args = video_put_args.parse_args()
-        return {video_id: args}, 201
+user_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'email': fields.String,
+}
 
 
-video_put_args = reqparse.RequestParser()
-video_put_args.add_argument('name', type=str, help='name of the video')
-video_put_args.add_argument('views', type=int, help='views of the video')
-video_put_args.add_argument('likes', type=int, help='likes on the video')
+class UserEndpointSet(Resource):
+    @marshal_with(user_fields)
+    def get(self):
+        users = User.query.all()
+        return users, 200
+
+    def post(self, name, email):
+        user = User(
+            name=name,
+            email=email,
+        )
+        db.session.add(user)
+        db.session.commit()
+        return '', 201
+
+    def put(self):
+        pass
+
+    def patch(self):
+        pass
+
+    def delete(self, user_id):
+        user = User.query.get(user_id)
+        db.session.delete(user)
+        db.session.commit()
+        return '', 204

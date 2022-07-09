@@ -8,3 +8,5 @@ api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
 db = SQLAlchemy(app)
 from storehouse import endpoints, models
+
+api.add_resource(endpoints.UserEndpointSet, '/users/')
