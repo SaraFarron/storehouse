@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 from storehouse import endpoints, models
 
-api.add_resource(endpoints.UserEndpoints, '/user/<int:user_id>')
+api.add_resource(endpoints.UserEndpoints, '/user/<int:model_id>')
 api.add_resource(endpoints.UsersEndpoints, '/users')
-# api.add_resource(endpoints.UserEndpoints, '/users/<int:user_id>')
-
+api.add_resource(endpoints.VideoEndpoints, '/video/<int:model_id>')
+api.add_resource(endpoints.VideosEndpoints, '/videos')

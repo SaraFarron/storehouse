@@ -2,7 +2,37 @@ from storehouse import db
 from datetime import date
 
 
-class User(db.Model):
+class CRUDs:
+    @classmethod
+    def get(cls, model_id: int):
+        return cls.query.get(model_id)
+
+    @classmethod
+    def get_all(cls):
+        return cls.query.all()
+
+    @classmethod
+    def create(cls, fields: dict):
+        entry = cls(**fields)
+        db.session.add(entry)
+        db.session.commit()
+
+    @classmethod
+    def update(cls, model_id: int, fields: dict):
+        entry = cls.get(model_id)
+        assert entry, 'User not found'
+        fields = {k: v for k, v in fields.items() if v}
+        for field, value in fields.items():
+            setattr(entry, field, value)
+        db.session.commit()
+
+    @classmethod
+    def delete(cls, model_id: int):
+        db.session.delete(cls.query.get(model_id))
+        db.session.commit()
+
+
+class User(db.Model, CRUDs):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
     # password = db.Column(db.String(50), nullable=False)
@@ -10,33 +40,11 @@ class User(db.Model):
     watchlist = db.relationship('Watchlist', backref='user', lazy=True)
     uploads = db.relationship('Video', backref='owner', lazy=True)
 
-    @classmethod
-    def get(cls, user_id: int):
-        return cls.query.get(user_id)
-
-    @classmethod
-    def create(cls, fields: dict):
-        user = User(
-            name=fields['name'],
-            email=fields['email'],
-        )
-        db.session.add(user)
-        db.session.commit()
-
-    @classmethod
-    def update(cls, user_id: int, fields: dict):
-        user = cls.get(user_id)
-        assert user, 'User not found'
-        fields = {k: v for k, v in fields.items() if v}
-        for field, value in fields.items():
-            setattr(user, field, value)
-        db.session.commit()
-
     def __repr__(self):
         return f'User(id={self.id} name={self.name} email={self.email})'
 
 
-class Watchlist(db.Model):
+class Watchlist(db.Model, CRUDs):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     target_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
@@ -45,28 +53,20 @@ class Watchlist(db.Model):
     episodes = db.Column(db.Integer, nullable=False)
     rewatches = db.Column(db.Integer, default=0)
 
-    @classmethod
-    def get(cls, list_id: int):
-        return cls.query.get(list_id)
-
     def __repr__(self):
         return f'Watchlist(id={self.id} user_id={self.user_id} target_id={self.target_id})'
 
 
-class Franchise(db.Model):
+class Franchise(db.Model, CRUDs):
     id = db.Column(db.Integer, primary_key=True)
     # name = db.Column(db.String(30), nullable=False)
     titles = db.relationship('Video', backref='franchise', lazy=True)
-
-    @classmethod
-    def get_franchise(cls, franchise_id: int):
-        return cls.query.get(franchise_id)
 
     # def __repr__(self):
     #     return f'Franchise(id={self.id} name={self.name})'
 
 
-class Video(db.Model):
+class Video(db.Model, CRUDs):
     id = db.Column(db.Integer, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     franchise_id = db.Column(db.Integer, db.ForeignKey('franchise.id'))
@@ -78,10 +78,6 @@ class Video(db.Model):
     duration = db.Column(db.Integer, nullable=False)
     order_number = db.Column(db.Integer)
     watchlists = db.relationship('Watchlist', backref='target', lazy=True)
-
-    @classmethod
-    def get(cls, video_id: int):
-        return cls.query.get(video_id)
 
     def __repr__(self):
         return f'Video(id={self.id} title={self.title})'

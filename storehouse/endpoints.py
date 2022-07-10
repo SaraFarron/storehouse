@@ -13,12 +13,46 @@ user_fields = {
     'email': fields.String,
 }
 
+video_parser = reqparse.RequestParser()
+video_parser.add_argument()
+video_fields = {}
+
+
+class GenericEndpoints(Resource):
+    model = None
+    model_fields = None
+    model_parser = None
+
+    @marshal_with(model_fields)
+    def get(self, model_id):
+        instance = self.model.get(model_id)
+        return instance, 200
+
+    def put(self, model_id):
+        args = self.model_parser.parse_args()
+        try:
+            self.model.update(model_id, args)
+        except AssertionError:
+            self.model.create(args)
+        return '', 201
+
+    def patch(self, model_id):
+        args = self.model_parser.parse_args()
+        try:
+            self.model.update(model_id, args)
+        except AssertionError:
+            return {'error': 'object not found'}, 404
+        return '', 200
+
+    def delete(self, model_id):
+        self.model.delete(model_id)
+        return '', 204
+
 
 class UsersEndpoints(Resource):
     @marshal_with(user_fields)
     def get(self):
-        users = User.query.all()
-        return users, 200
+        return User.get_all(), 200
 
     def post(self):
         args = user_parser.parse_args()
@@ -29,30 +63,17 @@ class UsersEndpoints(Resource):
         return '', 201
 
 
-class UserEndpoints(Resource):
-    @marshal_with(user_fields)
-    def get(self, user_id):
-        user = User.get(user_id)
-        return user, 200
+class UserEndpoints(GenericEndpoints):
+    model = User
+    model_fields = user_fields
+    model_parser = user_parser
 
-    def put(self, user_id):
-        args = user_parser.parse_args()
-        try:
-            User.update(user_id, args)
-        except AssertionError:
-            User.create(args)
-        return '', 201
 
-    def patch(self, user_id):
-        args = user_parser.parse_args()
-        try:
-            User.update(user_id, args)
-        except AssertionError:
-            return {'error': 'user not found'}, 404
-        return '', 200
+class VideoEndpoints(GenericEndpoints):
+    model = Video
+    model_fields = video_fields
+    model_parser = video_parser
 
-    def delete(self, user_id):
-        user = User.get(user_id)
-        db.session.delete(user)
-        db.session.commit()
-        return '', 204
+
+class VideosEndpoints(Resource):
+    pass
