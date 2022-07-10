@@ -1,11 +1,12 @@
 from flask_restful import Resource, reqparse, fields, marshal_with
 from storehouse.models import User, Video, Watchlist, Franchise
 from storehouse import db
+from sqlalchemy.exc import IntegrityError
 
 
-parser = reqparse.RequestParser()
-parser.add_argument('name', required=True)
-parser.add_argument('email', required=True)
+user_parser = reqparse.RequestParser()
+user_parser.add_argument('name')
+user_parser.add_argument('email')
 user_fields = {
     'id': fields.Integer,
     'name': fields.String,
@@ -20,8 +21,12 @@ class UsersEndpoints(Resource):
         return users, 200
 
     def post(self):
-        args = parser.parse_args()
-        User.create(args)
+        args = user_parser.parse_args()
+        try:
+            User.create(args)
+        except IntegrityError:
+            return {'error': 'user with this email already exists'}, 400
+        return '', 201
 
 
 class UserEndpoints(Resource):
@@ -31,7 +36,7 @@ class UserEndpoints(Resource):
         return user, 200
 
     def put(self, user_id):
-        args = parser.parse_args()
+        args = user_parser.parse_args()
         try:
             User.update(user_id, args)
         except AssertionError:
@@ -39,7 +44,12 @@ class UserEndpoints(Resource):
         return '', 201
 
     def patch(self, user_id):
-        pass
+        args = user_parser.parse_args()
+        try:
+            User.update(user_id, args)
+        except AssertionError:
+            return {'error': 'user not found'}, 404
+        return '', 200
 
     def delete(self, user_id):
         user = User.get(user_id)

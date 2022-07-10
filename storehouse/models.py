@@ -27,9 +27,9 @@ class User(db.Model):
     def update(cls, user_id: int, fields: dict):
         user = cls.get(user_id)
         assert user, 'User not found'
+        fields = {k: v for k, v in fields.items() if v}
         for field, value in fields.items():
             setattr(user, field, value)
-        db.session.add(user)
         db.session.commit()
 
     def __repr__(self):
