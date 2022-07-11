@@ -108,7 +108,9 @@ class VideoEndpoints(GenericEndpoints):
 
 
 class VideosEndpoints(Resource):
-    pass
+    model = Video
+    model_fields = video_fields
+    model_parser = video_parser
 
 
 class WatchlistEndpoints(GenericEndpoints):
@@ -118,7 +120,9 @@ class WatchlistEndpoints(GenericEndpoints):
 
 
 class WatchlistsEndpoints(Resource):
-    pass
+    model = Watchlist
+    model_fields = watchlist_fields
+    model_parser = watchlist_parser
 
 
 class FranchiseEndpoints(GenericEndpoints):
@@ -128,4 +132,6 @@ class FranchiseEndpoints(GenericEndpoints):
 
 
 class FranchisesEndpoints(Resource):
-    pass
+    model = Franchise
+    model_parser = franchise_parser
+    model_fields = franchise_fields
