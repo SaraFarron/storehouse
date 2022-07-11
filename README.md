@@ -1,6 +1,15 @@
 ## Storehouse
 An application for storing and hosting video content
 
+### Commands
+Migrations
+
+`flask db init`
+
+`flask db migrate`
+
+`flask db upgrade`
+
 ### Rough description
 
 - main page where all the available content is shown

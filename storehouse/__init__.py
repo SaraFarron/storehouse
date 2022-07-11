@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
+from flask_migrate import Migrate
 
 
 app = Flask(__name__)
@@ -8,6 +9,7 @@ api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 from storehouse import endpoints, models
 
 api.add_resource(endpoints.UserEndpoints, '/user/<int:model_id>')
