@@ -1,5 +1,6 @@
 from storehouse import db
 from datetime import date
+from passlib.hash import pbkdf2_sha256
 
 
 class CRUDs:
@@ -39,6 +40,11 @@ class User(db.Model, CRUDs):
     email = db.Column(db.String(120), unique=True, nullable=False)
     watchlist = db.relationship('Watchlist', backref='user', lazy=True)
     uploads = db.relationship('Video', backref='owner', lazy=True)
+
+    @classmethod
+    def create(cls, fields: dict):
+        fields['passwords'] = pbkdf2_sha256.hash(fields['passwords'])
+        super(User, cls).create(fields)
 
     def __repr__(self):
         return f'User(id={self.id} name={self.name} email={self.email})'

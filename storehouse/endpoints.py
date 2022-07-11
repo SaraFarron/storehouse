@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 user_parser = reqparse.RequestParser()
 user_parser.add_argument('name')
+user_parser.add_argument('password')
 user_parser.add_argument('email')
 user_fields = {
     'id': fields.Integer,
@@ -71,18 +72,27 @@ class GenericEndpoints(Resource):
         return '', 204
 
 
-class UsersEndpoints(Resource):
-    @marshal_with(user_fields)
+class GenericsEndpoints(Resource):
+    model = None
+    model_fields = None
+    model_parser = None
+
     def get(self):
-        return User.get_all(), 200
+        return marshal(self.model.get_all(), self.model_fields), 200
 
     def post(self):
-        args = user_parser.parse_args()
+        args = self.model_parser.parse_args()
         try:
-            User.create(args)
+            self.model.create(args)
         except IntegrityError:
-            return {'error': 'user with this email already exists'}, 400
+            return {'error': 'bad request'}, 400
         return '', 201
+
+
+class UsersEndpoints(GenericsEndpoints):
+    model = User
+    model_parser = user_parser
+    model_fields = user_fields
 
 
 class UserEndpoints(GenericEndpoints):
@@ -102,7 +112,9 @@ class VideosEndpoints(Resource):
 
 
 class WatchlistEndpoints(GenericEndpoints):
-    pass
+    model = Watchlist
+    model_fields = watchlist_fields
+    model_parser = watchlist_parser
 
 
 class WatchlistsEndpoints(Resource):
@@ -110,7 +122,9 @@ class WatchlistsEndpoints(Resource):
 
 
 class FranchiseEndpoints(GenericEndpoints):
-    pass
+    model = Franchise
+    model_parser = franchise_parser
+    model_fields = franchise_fields
 
 
 class FranchisesEndpoints(Resource):
