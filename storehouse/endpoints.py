@@ -1,4 +1,4 @@
-from flask_restful import Resource, reqparse, fields, marshal_with
+from flask_restful import Resource, reqparse, fields, marshal, marshal_with
 from storehouse.models import User, Video, Watchlist, Franchise
 from sqlalchemy.exc import IntegrityError
 
@@ -46,10 +46,9 @@ class GenericEndpoints(Resource):
     model_fields = None
     model_parser = None
 
-    @marshal_with(model_fields)
     def get(self, model_id):
         instance = self.model.get(model_id)
-        return instance, 200
+        return marshal(instance, self.model_fields), 200
 
     def put(self, model_id):
         args = self.model_parser.parse_args()
