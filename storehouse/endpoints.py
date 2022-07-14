@@ -47,6 +47,20 @@ class UsersEndpoints(GenericsEndpoints):
     model_parser = user_parser
     model_fields = user_fields
 
+    def get(self):
+        """
+        Get all users
+        ---
+        tags:
+          - user
+        responses:
+          200:
+            description: All users data
+            schema:
+              $ref: '#/definitions/Item'
+        """
+        return super(UsersEndpoints, self).get()
+
 
 class UserEndpoints(GenericEndpoints):
     model = User

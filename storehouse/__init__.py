@@ -2,14 +2,20 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_migrate import Migrate
+from flasgger import Swagger
 
 
 app = Flask(__name__)
 api = Api(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SWAGGER'] = {
+    'title': 'Storehouse API',
+    'uiversion': 2
+}
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+swag = Swagger(app, template_file='docs/template.yml')
 from storehouse import endpoints, models
 
 api.add_resource(endpoints.UserEndpoints, '/user/<int:model_id>')

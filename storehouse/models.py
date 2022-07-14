@@ -81,7 +81,7 @@ class Video(db.Model, CRUDs):
     is_series = db.Column(db.Boolean, default=False, nullable=False)
     upload_date = db.Column(db.Date, default=date.today, nullable=False)
     score = db.Column(db.Float, nullable=False)
-    duration = db.Column(db.Integer, nullable=False)
+    duration = db.Column(db.Float, nullable=False)
     order_number = db.Column(db.Integer)
     watchlists = db.relationship('Watchlist', backref='target', lazy=True)
 
