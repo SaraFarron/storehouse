@@ -43,7 +43,7 @@ class User(db.Model, CRUDs):
 
     @classmethod
     def create(cls, fields: dict):
-        fields['passwords'] = pbkdf2_sha256.hash(fields['passwords'])
+        fields['password'] = pbkdf2_sha256.hash(fields['password'])
         super(User, cls).create(fields)
 
     def __repr__(self):

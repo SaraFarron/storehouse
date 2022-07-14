@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SWAGGER'] = {
     'title': 'Storehouse API',
-    'uiversion': 2
+    'uiversion': 3,
 }
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)

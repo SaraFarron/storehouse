@@ -1,3 +1,4 @@
+from flask import request
 from flask_restful import Resource, marshal
 from sqlalchemy.exc import IntegrityError
 
@@ -5,14 +6,13 @@ from sqlalchemy.exc import IntegrityError
 class GenericEndpoints(Resource):
     model = None
     model_fields = None
-    model_parser = None
 
     def get(self, model_id):
         instance = self.model.get(model_id)
         return marshal(instance, self.model_fields), 200
 
     def put(self, model_id):
-        args = self.model_parser.parse_args()
+        args = request.get_json(force=True)
         try:
             self.model.update(model_id, args)
         except AssertionError:
@@ -20,7 +20,7 @@ class GenericEndpoints(Resource):
         return '', 201
 
     def patch(self, model_id):
-        args = self.model_parser.parse_args()
+        args = request.get_json(force=True)
         try:
             self.model.update(model_id, args)
         except AssertionError:
@@ -41,7 +41,7 @@ class GenericsEndpoints(Resource):
         return marshal(self.model.get_all(), self.model_fields), 200
 
     def post(self):
-        args = self.model_parser.parse_args()
+        args = request.get_json(force=True)
         try:
             self.model.create(args)
         except IntegrityError:

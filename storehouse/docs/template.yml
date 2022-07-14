@@ -4,7 +4,9 @@ info:
   description: 'TODO description'
   version: '1'
   contact: 'syuilinnikita@gmail.com'
-basePath: '/api/v1'
+produces:
+  - application/json
+#basePath: '/api/v1'
 
 securityDefinitions:
   Bearer:
@@ -23,6 +25,7 @@ definitions:
         type: string
       email:
         type: string
+        required: true
   Video:
     type: object
     properties:
@@ -42,7 +45,6 @@ definitions:
         type: float
       duration:
         type: float
-
   Watchlist:
     type: object
     properties:
@@ -60,3 +62,12 @@ definitions:
         type: integer
       rewatches:
         type: integer
+  Franchise:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      titles:
+        type: Video
