@@ -263,7 +263,7 @@ class VideosEndpoints(GenericsEndpoints):
           - video
         responses:
           200:
-            description: All users data
+            description: All videos data
             schema:
               $ref: '#/definitions/Video'
         """
@@ -302,6 +302,10 @@ class VideosEndpoints(GenericsEndpoints):
             name: order_number
             description: order number in franchise
             type: integer
+        responses:
+          201:
+            schema:
+              $ref: '#/definitions/Video'
         """
         return super(VideosEndpoints, self).post()
 
@@ -312,31 +316,85 @@ class WatchlistEndpoints(GenericEndpoints):
 
     def get(self, model_id):
         """
-        pass
+        Get watchlist
+        ---
+        tags:
+          - watchlist
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Watchlist'
+          404:
+            description: Watchlist with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(WatchlistEndpoints, self).get(model_id)
 
     def put(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Update watchlist
+        ---
+        tags:
+          - watchlist
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Watchlist'
+          404:
+            description: Watchlist with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(WatchlistEndpoints, self).put(model_id)
 
     def patch(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Partial update watchlist
+        ---
+        tags:
+          - watchlist
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Watchlist'
+          404:
+            description: Watchlist with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(WatchlistEndpoints, self).patch(model_id)
 
     def delete(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Delete watchlist
+        ---
+        tags:
+          - watchlist
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Watchlist'
+          404:
+            description: Watchlist with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(WatchlistEndpoints, self).delete(model_id)
 
@@ -347,38 +405,42 @@ class WatchlistsEndpoints(GenericsEndpoints):
 
     def get(self):
         """
-        Get all users
+        Get all watchlists
         ---
         tags:
           - watchlist
         responses:
           200:
-            description: All users data
+            description: All watchlists data
             schema:
-              $ref: '#/definitions/User'
+              $ref: '#/definitions/Watchlist'
         """
         return super(WatchlistsEndpoints, self).get()
 
     def post(self):
         """
-        Create a new user
+        Create a new watchlist
         ---
         tags:
           - watchlist
         parameters:
           - in: json
-            name: name
+            name: user_id
             required: true
-            description: The username
-            type: string
+            description: User foreign key
+            type: integer
           - in: json
-            name: password
+            name: target_id
+            description: Watchlist foreign key
             required: true
-            type: string
+            type: integer
           - in: json
-            name: email
+            name: score
             required: true
-            type: string
+            type: float
+          - in: json
+            name: rewatches
+            type: integer
         """
         return super(WatchlistsEndpoints, self).post()
 
@@ -389,31 +451,85 @@ class FranchiseEndpoints(GenericEndpoints):
 
     def get(self, model_id):
         """
-        pass
+        Get franchise
+        ---
+        tags:
+          - franchise
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Franchise'
+          404:
+            description: Franchise with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(FranchiseEndpoints, self).get(model_id)
 
     def put(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Update franchise
+        ---
+        tags:
+          - franchise
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Franchise'
+          404:
+            description: Franchise with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(FranchiseEndpoints, self).put(model_id)
 
     def patch(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Parital update franchise
+        ---
+        tags:
+          - franchise
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Franchise'
+          404:
+            description: Franchise with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(FranchiseEndpoints, self).patch(model_id)
 
     def delete(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Get franchise
+        ---
+        tags:
+          - franchise
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Franchise'
+          404:
+            description: Franchise with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(FranchiseEndpoints, self).delete(model_id)
 
@@ -424,21 +540,21 @@ class FranchisesEndpoints(GenericsEndpoints):
 
     def get(self):
         """
-        Get all users
+        Get all franchises
         ---
         tags:
           - franchise
         responses:
           200:
-            description: All users data
+            description: All franchises data
             schema:
-              $ref: '#/definitions/User'
+              $ref: '#/definitions/Franchise'
         """
         return super(FranchisesEndpoints, self).get()
 
     def post(self):
         """
-        Create a new user
+        Create a new franchise
         ---
         tags:
           - franchise
@@ -446,15 +562,10 @@ class FranchisesEndpoints(GenericsEndpoints):
           - in: json
             name: name
             required: true
-            description: The username
             type: string
-          - in: json
-            name: password
-            required: true
-            type: string
-          - in: json
-            name: email
-            required: true
-            type: string
+        responses:
+          201:
+            schema:
+              $ref: '#/definitions/Franchise'
         """
         return super(FranchisesEndpoints, self).post()
