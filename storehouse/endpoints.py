@@ -1,4 +1,4 @@
-from flask_restful import Resource, fields
+from flask_restful import fields
 from storehouse.models import User, Video, Watchlist, Franchise
 from storehouse.utils import GenericsEndpoints, GenericEndpoints
 
@@ -79,31 +79,85 @@ class UserEndpoints(GenericEndpoints):
 
     def get(self, model_id):
         """
-        pass
+        Get user
+        ---
+        tags:
+          - user
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/User'
+          404:
+            description: User with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(UserEndpoints, self).get(model_id)
 
     def put(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Update user
+        ---
+        tags:
+          - user
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/User'
+          404:
+            description: User with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(UserEndpoints, self).put(model_id)
 
     def patch(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Partial update user
+        ---
+        tags:
+          - user
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/User'
+          404:
+            description: User with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(UserEndpoints, self).patch(model_id)
 
     def delete(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Delete user
+        ---
+        tags:
+          - user
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          204:
+            schema:
+              $ref: '#/definitions/User'
+          404:
+            description: User with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(UserEndpoints, self).delete(model_id)
 
@@ -114,31 +168,85 @@ class VideoEndpoints(GenericEndpoints):
 
     def get(self, model_id):
         """
-        pass
+        Get video
+        ---
+        tags:
+          - video
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Video'
+          404:
+            description: Video with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(VideoEndpoints, self).get(model_id)
 
     def put(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Update video
+        ---
+        tags:
+          - video
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Video'
+          404:
+            description: Video with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(VideoEndpoints, self).put(model_id)
 
     def patch(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Partial update video
+        ---
+        tags:
+          - video
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          200:
+            schema:
+              $ref: '#/definitions/Video'
+          404:
+            description: Video with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(VideoEndpoints, self).patch(model_id)
 
     def delete(self, model_id):
         """
-
-        :param model_id:
-        :return:
+        Delete video
+        ---
+        tags:
+          - video
+        parameters:
+          - in: json
+            name: id
+            required: true
+            type: integer
+        responses:
+          204:
+            schema:
+              $ref: '#/definitions/Video'
+          404:
+            description: Video with this id was not found
+            schema: {'error': 'object not found'}
         """
         return super(VideoEndpoints, self).delete(model_id)
 
@@ -149,38 +257,51 @@ class VideosEndpoints(GenericsEndpoints):
 
     def get(self):
         """
-        Get all users
+        Get all videos
         ---
         tags:
-          - user
+          - video
         responses:
           200:
             description: All users data
             schema:
-              $ref: '#/definitions/User'
+              $ref: '#/definitions/Video'
         """
         return super(VideosEndpoints, self).get()
 
     def post(self):
         """
-        Create a new user
+        Create a new video
         ---
         tags:
-          - user
+          - video
         parameters:
           - in: json
-            name: name
+            name: title
             required: true
-            description: The username
+            description: video title
             type: string
           - in: json
-            name: password
+            name: owner_id
             required: true
-            type: string
+            description: owner id, User foreign key
+            type: integer
           - in: json
-            name: email
-            required: true
-            type: string
+            name: episodes
+            description: number of episodes
+            type: integer
+            default: 1
+          - in: json
+            name: is_series
+            type: boolean
+          - in: json
+            name: franchise_id
+            description: franchise id, foreign key to Franchise
+            type: integer
+          - in: json
+            name: order_number
+            description: order number in franchise
+            type: integer
         """
         return super(VideosEndpoints, self).post()
 
@@ -229,7 +350,7 @@ class WatchlistsEndpoints(GenericsEndpoints):
         Get all users
         ---
         tags:
-          - user
+          - watchlist
         responses:
           200:
             description: All users data
@@ -243,7 +364,7 @@ class WatchlistsEndpoints(GenericsEndpoints):
         Create a new user
         ---
         tags:
-          - user
+          - watchlist
         parameters:
           - in: json
             name: name
@@ -306,7 +427,7 @@ class FranchisesEndpoints(GenericsEndpoints):
         Get all users
         ---
         tags:
-          - user
+          - franchise
         responses:
           200:
             description: All users data
@@ -320,7 +441,7 @@ class FranchisesEndpoints(GenericsEndpoints):
         Create a new user
         ---
         tags:
-          - user
+          - franchise
         parameters:
           - in: json
             name: name
