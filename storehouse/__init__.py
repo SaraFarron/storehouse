@@ -3,10 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from flask_migrate import Migrate
 from flasgger import Swagger
+from os import getenv
 
 
 app = Flask(__name__)
 api = Api(app)
+app.config['SECRET_KEY'] = getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SWAGGER'] = {

@@ -1,4 +1,11 @@
+import jwt
+from flask import request, jsonify, make_response
 from flask_restful import fields
+from datetime import datetime, timedelta
+from functools import wraps
+from werkzeug.security import check_password_hash
+
+from storehouse import app
 from storehouse.models import User, Video, Watchlist, Franchise
 from storehouse.utils import GenericsEndpoints, GenericEndpoints
 
@@ -31,6 +38,71 @@ watchlist_fields = {
 }
 
 
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return jsonify({'message': 'Token is missing !!'}), 401
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+            current_user = User.query.filter_by(public_id=data['public_id']).first()
+        except:  # TODO make tokens expirable
+            return jsonify({
+                'message': 'Token is invalid !!'
+            }), 401
+
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
+
+@app.route('/users/login', methods=['POST'])
+def login():
+    auth = request.get_json(force=True)
+
+    if not all([auth, auth.get('email'), auth.get('password')]):
+        return make_response(
+            'Could not verify',
+            401,
+            {'WWW-Authenticate': 'Basic realm ="Login required!"'}
+        )
+
+    user = User.query.filter_by(email=auth.get('email')).first()
+    if not user:
+        return make_response(
+            'Could not verify',
+            401,
+            {'WWW-Authenticate': 'Basic realm ="User does not exist!"'}
+        )
+
+    if check_password_hash(user.password, auth.get('password')):
+        token = jwt.encode({
+            'public_id': user.public_id,
+            'exp': datetime.utcnow() + timedelta(minutes=30)
+        }, app.config['SECRET_KEY'])
+        return make_response(jsonify({'token': token}), 201)
+
+    return make_response(
+        'Could not verify',
+        403,
+        {'WWW-Authenticate': 'Basic realm ="Wrong Password!"'}
+    )
+
+
+@app.route('/users/signup', methods=['POST'])
+def signup():
+    args = request.get_json(force=True)
+    user = User.query.filter_by(email=args['email']).first()
+    if not user:
+        User.create(args)
+        return make_response('Successfully registered.', 201)
+    return make_response('User already exists. Please Log in.', 202)
+
+
 class UsersEndpoints(GenericsEndpoints):
     model = User
     model_fields = user_fields
@@ -50,27 +122,7 @@ class UsersEndpoints(GenericsEndpoints):
         return super(UsersEndpoints, self).get()
 
     def post(self):
-        """
-        Create a new user
-        ---
-        tags:
-          - user
-        parameters:
-          - in: json
-            name: name
-            required: true
-            description: The username
-            type: string
-          - in: json
-            name: password
-            required: true
-            type: string
-          - in: json
-            name: email
-            required: true
-            type: string
-        """
-        return super(UsersEndpoints, self).post()
+        return {'error': 'To create a user use /users/signup endpoint!'}, 400
 
 
 class UserEndpoints(GenericEndpoints):
@@ -98,6 +150,7 @@ class UserEndpoints(GenericEndpoints):
         """
         return super(UserEndpoints, self).get(model_id)
 
+    @token_required
     def put(self, model_id):
         """
         Update user
@@ -119,6 +172,7 @@ class UserEndpoints(GenericEndpoints):
         """
         return super(UserEndpoints, self).put(model_id)
 
+    @token_required
     def patch(self, model_id):
         """
         Partial update user
@@ -140,6 +194,7 @@ class UserEndpoints(GenericEndpoints):
         """
         return super(UserEndpoints, self).patch(model_id)
 
+    @token_required
     def delete(self, model_id):
         """
         Delete user
@@ -187,6 +242,7 @@ class VideoEndpoints(GenericEndpoints):
         """
         return super(VideoEndpoints, self).get(model_id)
 
+    @token_required
     def put(self, model_id):
         """
         Update video
@@ -208,6 +264,7 @@ class VideoEndpoints(GenericEndpoints):
         """
         return super(VideoEndpoints, self).put(model_id)
 
+    @token_required
     def patch(self, model_id):
         """
         Partial update video
@@ -229,6 +286,7 @@ class VideoEndpoints(GenericEndpoints):
         """
         return super(VideoEndpoints, self).patch(model_id)
 
+    @token_required
     def delete(self, model_id):
         """
         Delete video
@@ -255,6 +313,7 @@ class VideosEndpoints(GenericsEndpoints):
     model = Video
     model_fields = video_fields
 
+    @token_required
     def get(self):
         """
         Get all videos
@@ -269,6 +328,7 @@ class VideosEndpoints(GenericsEndpoints):
         """
         return super(VideosEndpoints, self).get()
 
+    @token_required
     def post(self):
         """
         Create a new video
@@ -314,6 +374,7 @@ class WatchlistEndpoints(GenericEndpoints):
     model = Watchlist
     model_fields = watchlist_fields
 
+    @token_required
     def get(self, model_id):
         """
         Get watchlist
@@ -335,6 +396,7 @@ class WatchlistEndpoints(GenericEndpoints):
         """
         return super(WatchlistEndpoints, self).get(model_id)
 
+    @token_required
     def put(self, model_id):
         """
         Update watchlist
@@ -356,6 +418,7 @@ class WatchlistEndpoints(GenericEndpoints):
         """
         return super(WatchlistEndpoints, self).put(model_id)
 
+    @token_required
     def patch(self, model_id):
         """
         Partial update watchlist
@@ -377,6 +440,7 @@ class WatchlistEndpoints(GenericEndpoints):
         """
         return super(WatchlistEndpoints, self).patch(model_id)
 
+    @token_required
     def delete(self, model_id):
         """
         Delete watchlist
@@ -417,6 +481,7 @@ class WatchlistsEndpoints(GenericsEndpoints):
         """
         return super(WatchlistsEndpoints, self).get()
 
+    @token_required
     def post(self):
         """
         Create a new watchlist
@@ -470,6 +535,7 @@ class FranchiseEndpoints(GenericEndpoints):
         """
         return super(FranchiseEndpoints, self).get(model_id)
 
+    @token_required
     def put(self, model_id):
         """
         Update franchise
@@ -491,6 +557,7 @@ class FranchiseEndpoints(GenericEndpoints):
         """
         return super(FranchiseEndpoints, self).put(model_id)
 
+    @token_required
     def patch(self, model_id):
         """
         Parital update franchise
@@ -512,6 +579,7 @@ class FranchiseEndpoints(GenericEndpoints):
         """
         return super(FranchiseEndpoints, self).patch(model_id)
 
+    @token_required
     def delete(self, model_id):
         """
         Get franchise
@@ -538,6 +606,7 @@ class FranchisesEndpoints(GenericsEndpoints):
     model = Franchise
     model_fields = franchise_fields
 
+    @token_required
     def get(self):
         """
         Get all franchises
@@ -552,6 +621,7 @@ class FranchisesEndpoints(GenericsEndpoints):
         """
         return super(FranchisesEndpoints, self).get()
 
+    @token_required
     def post(self):
         """
         Create a new franchise

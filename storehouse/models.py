@@ -1,6 +1,7 @@
-from storehouse import db
 from datetime import date
-from passlib.hash import pbkdf2_sha256
+from werkzeug.security import generate_password_hash
+
+from storehouse import db
 
 
 class CRUDs:
@@ -43,7 +44,7 @@ class User(db.Model, CRUDs):
 
     @classmethod
     def create(cls, fields: dict):
-        fields['password'] = pbkdf2_sha256.hash(fields['password'])
+        fields['password'] = generate_password_hash(fields['password'])
         super(User, cls).create(fields)
 
     def __repr__(self):
