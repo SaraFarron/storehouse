@@ -88,3 +88,6 @@ class Video(db.Model, CRUDs):
 
     def __repr__(self):
         return f'Video(id={self.id} title={self.title})'
+
+
+# db.create_all() Needed on first run

@@ -62,6 +62,30 @@ def token_required(f):
 
 @app.route('/users/login', methods=['POST'])
 def login():
+    """
+    Login endpoint, use this to get your token
+    ---
+    tags:
+      - auth
+    parameters:
+      - name: email
+        in: json
+        type: string
+        required: true
+      - name: password
+        in: json
+        type: string
+        required: true
+    responses:
+      201:
+        description: successful authentication
+      401:
+        description: email and password required
+      401:
+        description: wrong email or password
+      404:
+        description: user not found
+    """
     auth = request.get_json(force=True)
 
     if not all([auth, auth.get('email'), auth.get('password')]):
@@ -75,7 +99,7 @@ def login():
     if not user:
         return make_response(
             'Could not verify',
-            401,
+            404,
             {'WWW-Authenticate': 'Basic realm ="User does not exist!"'}
         )
 
@@ -95,6 +119,30 @@ def login():
 
 @app.route('/users/signup', methods=['POST'])
 def signup():
+    """
+    Registration endpoint, use this to create a new user
+    ---
+    tags:
+      - auth
+    parameters:
+      - name: name
+        in: json
+        type: string
+        required: true
+      - name: email
+        in: json
+        type: string
+        required: true
+      - name: password
+        in: json
+        type: string
+        required: true
+    responses:
+      201:
+        description: successful registration
+      202:
+        description: user already exists
+    """
     args = request.get_json(force=True)
     user = User.query.filter_by(email=args['email']).first()
     if not user:
